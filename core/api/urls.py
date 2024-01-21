@@ -10,7 +10,6 @@ from django.urls import path, include
 
 router = DefaultRouter()
 
-# router.registry.extend(custom_user_router.registry)
 router.registry.extend(player_router.registry)
 router.registry.extend(team_router.registry)
 router.registry.extend(squad_router.registry)
