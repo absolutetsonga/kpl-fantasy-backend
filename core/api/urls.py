@@ -1,6 +1,5 @@
 from rest_framework.routers import DefaultRouter
 
-from users.api.urls import custom_user_router
 from players.api.urls import player_router
 from teams.api.urls import team_router
 from squads.api.urls import squad_router
