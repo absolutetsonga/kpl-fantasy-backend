@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.core.validators import MaxValueValidator, MinValueValidator 
 
 # Create your models here.
 
@@ -14,7 +15,7 @@ class Squad(models.Model):
     date_created = models.DateField(auto_now_add=True)
     date_updated = models.DateField(auto_now=True)
 
-    total_budget = models.IntegerField(default=100)
+    total_budget = models.IntegerField(default=100, validators=[MinValueValidator(0), MaxValueValidator(100)])
 
     def __str__(self):
         return f"Squad of {self.user}"
