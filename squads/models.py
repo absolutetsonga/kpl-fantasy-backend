@@ -17,5 +17,11 @@ class Squad(models.Model):
 
     total_budget = models.IntegerField(default=100, validators=[MinValueValidator(0), MaxValueValidator(100)])
 
+    activated_bench_boost = models.BooleanField(default=False)
+    activated_triple_captain = models.BooleanField(default=False)
+    activated_free_hit = models.BooleanField(default=False)
+
+    left_transfers = models.IntegerField(default=3, validators=[MinValueValidator(0), MaxValueValidator(3)])
+
     def __str__(self):
         return f"Squad of {self.user}"
