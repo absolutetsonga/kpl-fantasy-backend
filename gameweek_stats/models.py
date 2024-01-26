@@ -12,8 +12,8 @@ class GameWeekStats(models.Model):
     date_created = models.DateField(auto_now_add=True)
     date_updated = models.DateField(auto_now=True)
 
-    player = models.ForeignKey(Player, on_delete=models.CASCADE, related_name="gameweek_stats", null=True)
-    gameweek = models.ForeignKey(GameWeek, on_delete=models.CASCADE, related_name="player_stats", null=True)
+    player = models.ForeignKey(Player, on_delete=models.CASCADE, related_name="gameweek_stats")
+    gameweek = models.ForeignKey(GameWeek, on_delete=models.CASCADE, related_name="player_stats")
 
     goals_scored = models.IntegerField(default=0)
     assists = models.IntegerField(default=0)
