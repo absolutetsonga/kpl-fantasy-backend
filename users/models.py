@@ -27,6 +27,8 @@ class CustomUser(AbstractUser):
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
 
+    has_draft = models.BooleanField(default=False, null=True)
+
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'email'

@@ -7,6 +7,8 @@ from datetime import datetime
 # One    -> Many
 
 class GameWeek(models.Model):
+    number = models.IntegerField(unique=True)
+
     date_created = models.DateField(auto_now_add=True)
     date_updated = models.DateField(auto_now=True)
 
@@ -26,5 +28,5 @@ class GameWeek(models.Model):
         return cls.objects.filter(start_date__lte=now, end_date__gte=now).first()
 
     def __str__(self):
-        return f"Game Week {self.id}"
+        return f"Game Week {self.number}"
     
