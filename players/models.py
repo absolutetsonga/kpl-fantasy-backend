@@ -28,6 +28,7 @@ class Player(models.Model):
     is_right_foot = models.BooleanField(default=True)
 
     team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='players')
+    sofascore_id = models.IntegerField(unique=True, null=True)
 
     def __str__(self):
         return f"Player {self.name}"
