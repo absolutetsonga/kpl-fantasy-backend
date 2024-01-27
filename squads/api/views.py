@@ -71,5 +71,11 @@ class SquadViewSet(ModelViewSet):
             user=user, 
         )
 
-        serializer = self.get_serializer(squad)
-        return Response(serializer.data, status=status.HTTP_201_CREATED if created else status.HTTP_400_BAD_REQUEST)
+        if created:
+            user.has_draft = True
+            user.save(update_fields=['has_draft'])
+
+            serializer = self.get_serializer(squad)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response({'error': 'Failed to create a new draft.'}, status=status.HTTP_400_BAD_REQUEST)
