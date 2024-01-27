@@ -12,6 +12,8 @@ class GameWeek(models.Model):
 
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
+    first_game = models.DateTimeField(null=True)
+    last_game = models.DateTimeField(null=True)
 
     @property
     def is_active(self):
