@@ -57,3 +57,9 @@ class OneClubPlayersLimitChecker(LimitChecker):
 
     def exceeds_limit(self, players, player):
         return players.filter(player__club=player.club).count() >= self.LIMIT
+    
+class EnoughBudgetLimitChecker(LimitChecker):
+    def exceeds_limit(self, total_budget, player_price):
+        return total_budget < player_price
+
+    

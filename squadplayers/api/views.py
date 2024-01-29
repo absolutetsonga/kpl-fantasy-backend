@@ -4,24 +4,25 @@ from rest_framework.response import Response
 
 from squads.models import Squad
 from players.models import Player
+
 from ..models import SquadPlayer
 
 from .serializers import SquadPlayerSerializer
 
 from ..utils.create_handler import squad_player_create_handler
-from ..utils.validate_create_handler import squad_player_validate_handler
+from ..utils.validate_create_handler import squad_player_validate_handler, squad_budget_validate_handler
 from ..utils.error_handler import error_handler
 
 from ..utils.limit_handler import (
                                 TotalLimitChecker, OnBenchLimitChecker, CaptainLimitChecker, 
                                 ViceCaptainLimitChecker, GoalkeepersLimitChecker, DefendersLimitChecker, 
-                                MiddlefieldersLimitChecker, StrikersLimitChecker, OneClubPlayersLimitChecker
+                                MiddlefieldersLimitChecker, StrikersLimitChecker, OneClubPlayersLimitChecker, EnoughBudgetLimitChecker
                                 )
 
 class SquadPlayerViewSet(ModelViewSet):
     queryset = SquadPlayer.objects.all()
     serializer_class = SquadPlayerSerializer
-    limit_checkers = {
+    squad_players_limit_checkers = {
         'total': TotalLimitChecker(),
         'on_bench': OnBenchLimitChecker(),
         'captain': CaptainLimitChecker(),
@@ -32,7 +33,9 @@ class SquadPlayerViewSet(ModelViewSet):
         'striker': StrikersLimitChecker(),
         'one_club': OneClubPlayersLimitChecker(),
     }
-
+    squad_budget_limit_checkers = {
+        'enough_budget': EnoughBudgetLimitChecker()
+    }
 
     def create(self, request, *args, **kwargs):
         squad_id = int(request.data.get('squad'))
@@ -47,11 +50,18 @@ class SquadPlayerViewSet(ModelViewSet):
         
         existing_players = SquadPlayer.objects.filter(squad=squad)
         
-        validation_error = squad_player_validate_handler.validate_squad_limits(existing_players, self.limit_checkers, request.data)
+        squad_players_validation_error = squad_player_validate_handler.validate_squad_limits(existing_players, self.squad_players_limit_checkers, request.data)
+        squad_budget_validation_error = squad_budget_validate_handler.validate_squad_budget(player=player, squad=squad, checkers=self.squad_budget_limit_checkers)
 
-        if validation_error:
-            return validation_error
+        if squad_players_validation_error:
+            return squad_players_validation_error
         
+        if squad_budget_validation_error:
+            return squad_budget_validation_error
+        
+        squad.total_budget -= player.price
+        squad.save()
+
         return squad_player_create_handler.create_and_respond(squad, player, request.data, self.get_serializer)
     
     def update(self, request, *args, **kwargs):
@@ -81,12 +91,19 @@ class SquadPlayerViewSet(ModelViewSet):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request):
+    def destroy(self, request, *args, **kwargs):
         try:
             squad_player = self.get_object()
+            player_price = squad_player.player.price
+            squad = squad_player.squad
 
             squad_player.delete()
 
+            if squad and player_price is not None:
+                squad.total_budget += player_price
+                squad.save()
+
             return Response({'detail': 'Squad player deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+
         except SquadPlayer.DoesNotExist:
             return error_handler.not_found_error('Squad player not found')

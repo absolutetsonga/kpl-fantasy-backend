@@ -3,7 +3,7 @@ from ..models import Player
 from gameweek_stats.api.serializers import GameWeekStatsSerializer
 
 class PlayerSerializer(ModelSerializer):
-    gameweek_stats = GameWeekStatsSerializer(many=True, required=False)
+    gameweek_stats = GameWeekStatsSerializer(many=True, required=False, read_only=True)
 
     class Meta:
         model = Player

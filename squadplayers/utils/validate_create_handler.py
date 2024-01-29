@@ -1,4 +1,6 @@
 from players.models import Player
+from squads.models import Squad
+
 from core.constants import POSITION_MAPPING
 
 from ..models import SquadPlayer
@@ -13,9 +15,10 @@ class SquadPlayerValidationHandler:
         
         try:
             player = Player.objects.get(id=player_id)
+            squad = Squad.objects.get(id=squad_id)
 
-        except Player.DoesNotExist:
-            return error_handler.bad_request_error('Player not found.')
+        except Player.DoesNotExist or Squad.DoesNotExist:
+            return error_handler.bad_request_error('Player or Squad not found.')
             
         for key, checker in checkers.items():
             if key == 'total' and checker.exceeds_limit(players):
@@ -44,7 +47,7 @@ class SquadPlayerValidationHandler:
             
             if key == 'one_club' and checker.exceeds_limit(players, player):
                 return error_handler.bad_request_error('Too many players from the same club in the squad.')
-
+            
         if not self.is_position_compatible(player.position, position):
             return error_handler.bad_request_error('Player position does not match the squad position.')
 
@@ -69,4 +72,23 @@ class SquadPlayerValidationHandler:
         return players.filter(position=squad_player_position).exists()
     
 
+class SquadBudgetValidationHandler:
+    def validate_squad_budget(self, player, squad, checkers):
+        player_id = player.id
+        squad_id = squad.id
+
+        try:
+            player = Player.objects.get(id=player_id)
+            squad = Squad.objects.get(id=squad_id)
+
+        except Player.DoesNotExist or Squad.DoesNotExist:
+            return error_handler.bad_request_error('Player or Squad not found.')
+
+        for key, checker in checkers.items():
+            if key == 'enough_budget' and checker.exceeds_limit(total_budget=squad.total_budget, player_price=player.price):
+                return error_handler.bad_request_error('Insufficient budget to add player.')
+
+
+
 squad_player_validate_handler = SquadPlayerValidationHandler()
+squad_budget_validate_handler = SquadBudgetValidationHandler()

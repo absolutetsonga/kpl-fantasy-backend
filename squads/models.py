@@ -15,7 +15,12 @@ class Squad(models.Model):
     date_created = models.DateField(auto_now_add=True)
     date_updated = models.DateField(auto_now=True)
 
-    total_budget = models.IntegerField(default=100, validators=[MinValueValidator(0), MaxValueValidator(100)])
+    total_budget = models.DecimalField(
+        max_digits=4,  
+        decimal_places=1,
+        default=100,
+        validators=[MinValueValidator(0), MaxValueValidator(100)]
+    )
 
     activated_bench_boost = models.BooleanField(default=False)
     activated_triple_captain = models.BooleanField(default=False)
