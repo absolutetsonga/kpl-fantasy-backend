@@ -11,7 +11,7 @@ from .serializers import SquadPlayerSerializer
 
 from ..utils.create_handler import squad_player_create_handler
 from ..utils.validate_create_handler import squad_player_validate_handler, squad_budget_validate_handler
-from ..utils.error_handler import error_handler
+from utils.error_handler import error_handler
 
 from ..utils.limit_handler import (
                                 TotalLimitChecker, OnBenchLimitChecker, CaptainLimitChecker, 

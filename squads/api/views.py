@@ -2,7 +2,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
-from squadplayers.utils.error_handler import error_handler 
+from utils.error_handler import error_handler
 
 from django.contrib.auth import get_user_model
 

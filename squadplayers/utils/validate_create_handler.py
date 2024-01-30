@@ -4,7 +4,7 @@ from squads.models import Squad
 from core.constants import POSITION_MAPPING
 
 from ..models import SquadPlayer
-from .error_handler import error_handler
+from utils.error_handler import error_handler
 
 class SquadPlayerValidationHandler:
     def validate_squad_limits(self, players, checkers, data):
