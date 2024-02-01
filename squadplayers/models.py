@@ -30,7 +30,7 @@ class SquadPlayer(models.Model):
     
     squad = models.ForeignKey(Squad, on_delete=models.CASCADE)
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
-
+    
     position = models.CharField(max_length=255, choices=PositionChoices.choices, blank=False)
 
     is_captain = models.BooleanField(default=False)
