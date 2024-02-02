@@ -18,6 +18,6 @@ class ContactViewSet(ModelViewSet):
             previous_messages = Contact.objects.filter(email=user_email)
 
             if previous_messages.filter(is_responded=False).exists():
-                return error_handler.bad_request_error({'detail': 'You must wait for a response to your previous messages before sending a new one.'})
+                return error_handler.bad_request_error('You must wait for a response to your previous messages before sending a new one.')
 
         return super().create(request, *args, **kwargs)
