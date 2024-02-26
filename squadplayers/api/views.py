@@ -94,14 +94,15 @@ class SquadPlayerViewSet(ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         try:
             squad_player = self.get_object()
-            player_price = squad_player.player.price
-            squad = squad_player.squad
+ 
+            # player_price = squad_player.player.price
+            # squad = squad_player.squad
+
+            # if squad and player_price is not None:
+            #     squad.total_budget += player_price
+            #     squad.save()
 
             squad_player.delete()
-
-            if squad and player_price is not None:
-                squad.total_budget += player_price
-                squad.save()
 
             return Response({'detail': 'Squad player deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
 
