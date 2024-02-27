@@ -21,7 +21,8 @@ class Squad(models.Model):
         default=100,
         validators=[MinValueValidator(0), MaxValueValidator(100)]
     )
-
+    total_points = models.IntegerField()
+    
     activated_bench_boost = models.BooleanField(default=False)
     activated_triple_captain = models.BooleanField(default=False)
     activated_free_hit = models.BooleanField(default=False)

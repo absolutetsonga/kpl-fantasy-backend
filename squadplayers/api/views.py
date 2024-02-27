@@ -95,12 +95,12 @@ class SquadPlayerViewSet(ModelViewSet):
         try:
             squad_player = self.get_object()
  
-            # player_price = squad_player.player.price
-            # squad = squad_player.squad
+            player_price = squad_player.player.price
+            squad = squad_player.squad
 
-            # if squad and player_price is not None:
-            #     squad.total_budget += player_price
-            #     squad.save()
+            if squad and player_price is not None:
+                squad.total_budget += player_price
+                squad.save()
 
             squad_player.delete()
 

@@ -1,10 +1,15 @@
+from django.db.models import F
+
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework import status
 
 from ..models import GameWeekStats
-from players.models import Player
+
+from squadplayers.models import SquadPlayer
 from gameweek.models import GameWeek
+from players.models import Player
+from squads.models import Squad
 
 from .serializers import GameWeekStatsSerializer
 
@@ -62,12 +67,18 @@ class GameWeekStatsViewSet(ModelViewSet):
             serializer = self.get_serializer(gameweek_stats)
             
             points = self.calculate_gameweek_points(gameweek_stats)
-
-            print(points)
             
             gameweek_stats.points = points
             gameweek_stats.save()
+
+            player.points = player.points + points
+            player.save()
             
+            squad_players = SquadPlayer.objects.filter(player=player_id)
+            squad_ids = squad_players.values_list('squad', flat=True).distinct()
+
+            Squad.objects.filter(id__in=squad_ids).update(total_points=F('total_points') + points)
+
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         
         serializer = self.get_serializer(gameweek_stats, data=request.data)

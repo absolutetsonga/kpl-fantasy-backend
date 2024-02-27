@@ -89,6 +89,5 @@ class SquadBudgetValidationHandler:
                 return error_handler.bad_request_error('Insufficient budget to add player.')
 
 
-
 squad_player_validate_handler = SquadPlayerValidationHandler()
 squad_budget_validate_handler = SquadBudgetValidationHandler()
