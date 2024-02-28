@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'users',
     'players',
     'gameweek_stats',
+    'games',
     'gameweek',
     'teams',
     'squads',
