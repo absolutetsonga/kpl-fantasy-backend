@@ -23,7 +23,7 @@ class Player(models.Model):
     nationality_image_url = models.URLField()
 
     price = models.DecimalField(max_digits=3, decimal_places=1, null=True) 
-    points = models.IntegerField()
+    points = models.IntegerField(default=0)
 
     is_injured = models.BooleanField(default=False) 
     is_right_foot = models.BooleanField(default=True)
