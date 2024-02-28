@@ -69,6 +69,12 @@ class SquadViewSet(ModelViewSet):
         
         squad, created = Squad.objects.get_or_create(
             user=user, 
+            total_budget=100,
+            total_points=0,
+            activated_bench_boost=False,
+            activated_triple_captain=False,
+            activated_free_hit=False,
+            left_transfers=3
         )
 
         if created:
