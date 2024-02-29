@@ -4,6 +4,7 @@ from django.utils.translation import gettext as _
 from django.contrib.auth.validators import UnicodeUsernameValidator
 
 from .managers import CustomUserManager
+from teams.models import Team
 
 # use the get_user_model() method from django.contrib.auth to refer 
 
@@ -26,6 +27,8 @@ class CustomUser(AbstractUser):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
+
+    team_admin = models.IntegerField(null=True)
 
     has_draft = models.BooleanField(default=False, null=True)
 
