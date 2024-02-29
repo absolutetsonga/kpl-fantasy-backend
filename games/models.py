@@ -8,8 +8,8 @@ class Game(models.Model):
 
     gameweek = models.ForeignKey(GameWeek, on_delete=models.CASCADE, related_name='games')
 
-    home_team = models.OneToOneField(Team, on_delete=models.CASCADE, related_name="home_game_id")
-    away_team = models.OneToOneField(Team, on_delete=models.CASCADE, related_name="away_game_id")
+    home_team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name="home_game_id")
+    away_team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name="away_game_id")
 
     home_score = models.IntegerField(null=True, default=-1)
     away_score = models.IntegerField(null=True, default=-1)
