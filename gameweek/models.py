@@ -7,6 +7,9 @@ from django.utils import timezone
 # One    -> Many
 
 class GameWeek(models.Model):
+    class Meta:
+        ordering = ['number']
+        
     number = models.IntegerField(unique=True)
 
     date_created = models.DateField(auto_now_add=True)
