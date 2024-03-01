@@ -1,16 +1,19 @@
+from datetime import datetime
+
 from rest_framework import status
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 
 from squads.models import Squad
 from players.models import Player
+from gameweek.models import GameWeek
 
 from ..models import SquadPlayer
 
 from .serializers import SquadPlayerSerializer
 
 from ..utils.create_handler import squad_player_create_handler
-from ..utils.validate_create_handler import squad_player_validate_handler, squad_budget_validate_handler
+from ..utils.validate_create_handler import squad_player_validate_handler, squad_budget_validate_handler, squad_gameweek_validate_handler
 from utils.error_handler import error_handler
 
 from ..utils.limit_handler import (
@@ -33,6 +36,7 @@ class SquadPlayerViewSet(ModelViewSet):
         'striker': StrikersLimitChecker(),
         'one_club': OneClubPlayersLimitChecker(),
     }
+
     squad_budget_limit_checkers = {
         'enough_budget': EnoughBudgetLimitChecker()
     }
@@ -42,6 +46,7 @@ class SquadPlayerViewSet(ModelViewSet):
         player_id = int(request.data.get('player'))
 
         try: 
+            current_gameweek = GameWeek.current_gameweek()
             squad = Squad.objects.get(id=squad_id)
             player = Player.objects.get(id=player_id)
 
@@ -52,6 +57,7 @@ class SquadPlayerViewSet(ModelViewSet):
         
         squad_players_validation_error = squad_player_validate_handler.validate_squad_limits(existing_players, self.squad_players_limit_checkers, request.data)
         squad_budget_validation_error = squad_budget_validate_handler.validate_squad_budget(player=player, squad=squad, checkers=self.squad_budget_limit_checkers)
+        squad_gameweek_validation_error = squad_gameweek_validate_handler.validate_gameweek_time(gameweek=current_gameweek)
 
         if squad_players_validation_error:
             return squad_players_validation_error
@@ -59,6 +65,9 @@ class SquadPlayerViewSet(ModelViewSet):
         if squad_budget_validation_error:
             return squad_budget_validation_error
         
+        if squad_gameweek_validation_error:
+            return squad_gameweek_validation_error
+    
         squad.total_budget -= player.price
         squad.save()
 
@@ -69,6 +78,7 @@ class SquadPlayerViewSet(ModelViewSet):
         squad = request.data.get('squad')
 
         try: 
+            current_gameweek = GameWeek.current_gameweek()
             squad_player = SquadPlayer.objects.get(id=squad_player_id)
             squad = Squad.objects.get(id=squad)
 
@@ -78,7 +88,11 @@ class SquadPlayerViewSet(ModelViewSet):
         existing_players = SquadPlayer.objects.filter(squad=squad)
 
         serializer = self.get_serializer(squad_player, data=request.data)
+        squad_gameweek_validation_error = squad_gameweek_validate_handler.validate_gameweek_time(gameweek=current_gameweek)
 
+        if squad_gameweek_validation_error:
+            return squad_gameweek_validation_error
+        
         if request.data.get('is_vice_captain') == True and existing_players.filter(is_vice_captain=True).count() >= 1:
             return error_handler.bad_request_error('vice captain already exists')
         
@@ -93,11 +107,17 @@ class SquadPlayerViewSet(ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         try:
+            current_gameweek = GameWeek.current_gameweek()
+
             squad_player = self.get_object()
  
             player_price = squad_player.player.price
             squad = squad_player.squad
-
+            
+            squad_gameweek_validation_error = squad_gameweek_validate_handler.validate_gameweek_time(gameweek=current_gameweek)
+            
+            if squad_gameweek_validation_error:
+                return squad_gameweek_validation_error
             if squad and player_price is not None:
                 squad.total_budget += player_price
                 squad.save()

@@ -88,6 +88,12 @@ class SquadBudgetValidationHandler:
             if key == 'enough_budget' and checker.exceeds_limit(total_budget=squad.total_budget, player_price=player.price):
                 return error_handler.bad_request_error('Insufficient budget to add player.')
 
+class SquadGameweekValidationHandler:
+    def validate_gameweek_time(self, gameweek):
+        if gameweek is not None:
+            return error_handler.bad_request_error("Cannot change squad during an active gameweek.")
+
 
 squad_player_validate_handler = SquadPlayerValidationHandler()
 squad_budget_validate_handler = SquadBudgetValidationHandler()
+squad_gameweek_validate_handler = SquadGameweekValidationHandler()
