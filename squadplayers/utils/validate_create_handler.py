@@ -1,6 +1,9 @@
 from players.models import Player
 from squads.models import Squad
 
+from datetime import datetime
+from gameweek.models import GameWeek
+
 from core.constants import POSITION_MAPPING
 
 from ..models import SquadPlayer
@@ -15,7 +18,6 @@ class SquadPlayerValidationHandler:
         
         try:
             player = Player.objects.get(id=player_id)
-            squad = Squad.objects.get(id=squad_id)
 
         except Player.DoesNotExist or Squad.DoesNotExist:
             return error_handler.bad_request_error('Player or Squad not found.')
@@ -92,6 +94,12 @@ class SquadGameweekValidationHandler:
     def validate_gameweek_time(self, gameweek):
         if gameweek is not None:
             return error_handler.bad_request_error("Cannot change squad during an active gameweek.")
+    
+    def validate_gameweek_is_updated(self, gameweek):
+        not_updated_gameweeks = GameWeek.objects.filter(end_date__lt=datetime.now(), updated=False)
+
+        if not_updated_gameweeks.exists():
+            return error_handler.bad_request_error("Changes are not allowed until all past gameweeks are updated.")
 
 
 squad_player_validate_handler = SquadPlayerValidationHandler()

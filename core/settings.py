@@ -222,3 +222,6 @@ CORS_ALLOWED_ORIGINS = getenv(
 ).split(',')
 
 CORS_ALLOW_CREDENTIALS = True
+
+USE_TZ = True
+TIME_ZONE = 'UTC'

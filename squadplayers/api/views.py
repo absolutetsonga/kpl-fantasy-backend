@@ -58,6 +58,7 @@ class SquadPlayerViewSet(ModelViewSet):
         squad_players_validation_error = squad_player_validate_handler.validate_squad_limits(existing_players, self.squad_players_limit_checkers, request.data)
         squad_budget_validation_error = squad_budget_validate_handler.validate_squad_budget(player=player, squad=squad, checkers=self.squad_budget_limit_checkers)
         squad_gameweek_validation_error = squad_gameweek_validate_handler.validate_gameweek_time(gameweek=current_gameweek)
+        squad_gameweek_active_error = squad_gameweek_validate_handler.validate_gameweek_is_updated(gameweek=current_gameweek)
 
         if squad_players_validation_error:
             return squad_players_validation_error
@@ -67,6 +68,9 @@ class SquadPlayerViewSet(ModelViewSet):
         
         if squad_gameweek_validation_error:
             return squad_gameweek_validation_error
+
+        if squad_gameweek_active_error:
+            return squad_gameweek_active_error
     
         squad.total_budget -= player.price
         squad.save()
@@ -93,6 +97,11 @@ class SquadPlayerViewSet(ModelViewSet):
         if squad_gameweek_validation_error:
             return squad_gameweek_validation_error
         
+        squad_gameweek_active_error = squad_gameweek_validate_handler.validate_gameweek_is_updated(gameweek=current_gameweek)
+
+        if squad_gameweek_active_error:
+            return squad_gameweek_active_error
+        
         if request.data.get('is_vice_captain') == True and existing_players.filter(is_vice_captain=True).count() >= 1:
             return error_handler.bad_request_error('vice captain already exists')
         
@@ -115,9 +124,14 @@ class SquadPlayerViewSet(ModelViewSet):
             squad = squad_player.squad
             
             squad_gameweek_validation_error = squad_gameweek_validate_handler.validate_gameweek_time(gameweek=current_gameweek)
-            
+            squad_gameweek_active_error = squad_gameweek_validate_handler.validate_gameweek_is_updated(gameweek=current_gameweek)
+
             if squad_gameweek_validation_error:
                 return squad_gameweek_validation_error
+            
+            if squad_gameweek_active_error:
+                return squad_gameweek_active_error
+            
             if squad and player_price is not None:
                 squad.total_budget += player_price
                 squad.save()

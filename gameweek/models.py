@@ -1,5 +1,5 @@
 from django.db import models
-from datetime import datetime
+from django.utils import timezone
 
 # Create your models here.
 
@@ -22,12 +22,12 @@ class GameWeek(models.Model):
 
     @property
     def is_active(self):
-        now = datetime.now()
+        now = timezone.now()
         return self.start_date <= now <= self.end_date
 
     @classmethod
     def current_gameweek(cls):
-        now = datetime.now()
+        now = timezone.now()
         return cls.objects.filter(start_date__lte=now, end_date__gte=now).first()
 
     def __str__(self):
