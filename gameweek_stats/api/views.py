@@ -50,7 +50,7 @@ class GameWeekStatsViewSet(ModelViewSet):
             gameweek = GameWeek.objects.get(id=gameweek_id)
 
         except Player.DoesNotExist:
-            return error_handler.bad_request_error(f'Player with ID {player_id} does not exist.')
+            return error_handler.bad_request_error(f'Игрок с ID {player_id} не сушествует.')
         
         gameweek_stats, created = GameWeekStats.objects.get_or_create(
             player=player, 

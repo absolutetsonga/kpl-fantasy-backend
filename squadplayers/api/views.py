@@ -103,10 +103,10 @@ class SquadPlayerViewSet(ModelViewSet):
             return squad_gameweek_active_error
         
         if request.data.get('is_vice_captain') == True and existing_players.filter(is_vice_captain=True).count() >= 1:
-            return error_handler.bad_request_error('vice captain already exists')
+            return error_handler.bad_request_error('Вице-капитан команды уже существует.')
         
         if request.data.get('is_captain') == True and existing_players.filter(is_captain=True).count() >= 1:
-            return error_handler.bad_request_error('captain already exists')
+            return error_handler.bad_request_error('Капитан команды уже существует.')
         
         if serializer.is_valid():
             serializer.save()

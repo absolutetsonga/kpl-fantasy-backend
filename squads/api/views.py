@@ -21,19 +21,19 @@ class SquadViewSet(ModelViewSet):
         id = request.query_params.get('user_id', None)
 
         if not id:
-            return error_handler.bad_request_error('User ID is required')
+            return error_handler.bad_request_error('Что-то пошло не так')
 
         try:
             id = int(id)
         except ValueError:
-            return error_handler.bad_request_error('Invalid User ID')
+            return error_handler.bad_request_error('Что-то пошло не так')
         
         try:
             user = User.objects.get(id=id)
         except User.DoesNotExist:
-            return error_handler.not_found_error("User not found")
+            return error_handler.not_found_error("Что-то пошло не так")
         except ValueError:
-            return error_handler.bad_request_error("Invalid user email")
+            return error_handler.bad_request_error("Что-то пошло не так")
 
         draft = Squad.objects.filter(user=user).first()
 
@@ -41,31 +41,31 @@ class SquadViewSet(ModelViewSet):
             serializer = self.get_serializer(draft)
             return Response(serializer.data)
         else:
-            return error_handler.not_found_error("No draft found for the user")
+            return error_handler.not_found_error("Что-то пошло не так")
 
     def create(self, request, *args, **kwargs):
         user_id = request.data.get('user_id')
 
         if not user_id:
-            return error_handler.bad_request_error('User ID is required')
+            return error_handler.bad_request_error('Что-то пошло не так')
 
         try:
             user_id = int(user_id)
         except ValueError:
-            return error_handler.bad_request_error('Invalid User ID')
+            return error_handler.bad_request_error('Что-то пошло не так')
 
         try:
             user = User.objects.get(id=user_id)
         except User.DoesNotExist:
-            return error_handler.not_found_error('User not found')
+            return error_handler.not_found_error('Что-то пошло не так')
 
         if not user.is_active:
-            return error_handler.bad_request_error('User is not active')
+            return error_handler.bad_request_error('Что-то пошло не так')
 
         draft_exists = Squad.objects.filter(user=user).exists()
 
         if draft_exists:
-            return error_handler.bad_request_error('Draft already exists for this user')
+            return error_handler.bad_request_error('Драфт уже создан для данного игрока')
         
         squad, created = Squad.objects.get_or_create(
             user=user, 
@@ -84,4 +84,4 @@ class SquadViewSet(ModelViewSet):
             serializer = self.get_serializer(squad)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
-            return Response({'error': 'Failed to create a new draft.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'Не удалось создать драфт, попробуйте позже или обратитесь в Службу Поддержки.'}, status=status.HTTP_400_BAD_REQUEST)
